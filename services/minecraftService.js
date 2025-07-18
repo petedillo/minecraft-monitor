@@ -56,24 +56,7 @@ async function executeMinecraftCommand(command) {
   });
 }
 
-/**
- * Get recent chat messages from the server
- * @returns {Promise<string[]>} Array of chat messages
- */
-async function getChatMessages() {
-  return new Promise((resolve, reject) => {
-    exec(`docker logs ${MINECRAFT_CONTAINER} --tail 50 | grep -E "\\[INFO\\].*<.*>"`, (error, stdout, stderr) => {
-      if (error && error.code !== 1) {
-        logger.error(`Error getting chat messages: ${error.message}`);
-        return reject(new Error(`Failed to get chat messages: ${error.message}`));
-      }
-      
-      const messages = stdout ? stdout.trim().split('\n').filter(line => line.trim()) : [];
-      logger.info(`Retrieved ${messages.length} chat messages`);
-      resolve(messages);
-    });
-  });
-}
+
 
 /**
  * Monitor server logs for specific patterns
@@ -87,13 +70,7 @@ function startServerMonitoring() {
       const players = await getActivePlayers();
       logger.info(`Currently monitoring ${players.length} players`);
       
-      // Check for chat messages
-      const messages = await getChatMessages();
-      if (messages.length > 0) {
-        messages.forEach(message => {
-          logger.info(`Chat: ${message}`);
-        });
-      }
+
     } catch (error) {
       logger.error('Error monitoring logs:', error);
     }
@@ -120,7 +97,7 @@ function stopServerMonitoring(monitoringInterval) {
 module.exports = {
   getActivePlayers,
   executeMinecraftCommand,
-  getChatMessages,
+
   startServerMonitoring,
   stopServerMonitoring
 };

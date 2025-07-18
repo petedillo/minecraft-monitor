@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
       health: '/health',
       status: '/status',
       command: '/command (POST)',
-      chat: '/chat'
+
     },
     timestamp: new Date().toISOString()
   });

@@ -9,7 +9,6 @@ router.get('/status', minecraftController.getStatus);
 // Execute a command on the Minecraft server
 router.post('/command', validateCommand, minecraftController.executeCommand);
 
-// Get recent chat messages
-router.get('/chat', minecraftController.getChatMessages);
+
 
 module.exports = router;

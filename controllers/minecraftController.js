@@ -39,23 +39,7 @@ async function executeCommand(req, res, next) {
   }
 }
 
-/**
- * Get recent chat messages from the server
- */
-async function getChatMessages(req, res, next) {
-  try {
-    const messages = await minecraftService.getChatMessages();
-    
-    res.json({
-      status: 'success',
-      messages,
-      count: messages.length,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    next(error);
-  }
-}
+
 
 /**
  * Health check endpoint
@@ -72,6 +56,6 @@ function healthCheck(req, res) {
 module.exports = {
   getStatus,
   executeCommand,
-  getChatMessages,
+
   healthCheck
 };

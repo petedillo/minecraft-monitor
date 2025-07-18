@@ -20,9 +20,7 @@ function errorHandler(err, req, res, next) {
   } else if (err.message.includes('Failed to execute command')) {
     statusCode = 502;
     message = 'Unable to execute command on Minecraft server';
-  } else if (err.message.includes('Failed to get chat messages')) {
-    statusCode = 503;
-    message = 'Unable to retrieve chat messages';
+
   } else if (err.message.includes('Command must be a non-empty string')) {
     statusCode = 400;
     message = err.message;

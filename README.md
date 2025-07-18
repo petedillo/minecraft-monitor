@@ -6,7 +6,6 @@ A simplified Express.js application that monitors Minecraft Bedrock server logs 
 
 - Real-time monitoring of Docker logs from the Minecraft Bedrock server container
 - Player connection tracking
-- Chat message monitoring
 - Command execution API
 - Simple REST API for server status
 
@@ -26,7 +25,6 @@ A simplified Express.js application that monitors Minecraft Bedrock server logs 
 
 - `GET /`: Welcome message
 - `GET /status`: Returns server status, active players, and player count
-- `GET /chat`: Returns recent chat messages from the server
 - `POST /command`: Execute a command on the server (requires JSON body with `command` field)
 
 ## Configuration
@@ -39,7 +37,6 @@ The application uses the following configuration:
 
 The application monitors Docker logs from the Minecraft server container to:
 1. Track player connections and disconnections
-2. Monitor chat messages in real-time
 3. Provide API endpoints for server management
 4. Execute commands on the server via Docker exec
 
@@ -50,14 +47,15 @@ The application monitors Docker logs from the Minecraft server container to:
 curl http://localhost:3000/status
 ```
 
-### Get recent chat messages
-```bash
-curl http://localhost:3000/chat
-```
-
 ### Execute a server command
 ```bash
 curl -X POST http://localhost:3000/command \
   -H "Content-Type: application/json" \
   -d '{"command": "say Hello from the API!"}'
+```
+### tp command
+```bash
+curl -X POST http://localhost:3000/command \
+  -H "Content-Type: application/json" \
+  -d '{"command": "tp @a ~ ~ ~"}'
 ```
