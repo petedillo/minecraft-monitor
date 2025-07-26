@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const createApp = require('./app');
 const minecraftService = require('./services/minecraftService');
 const logger = require('./utils/logger');
@@ -18,7 +20,7 @@ function startServer() {
   const server = app.listen(PORT, () => {
     logger.info(`🚀 Server is running on port ${PORT}`);
     logger.info(`📦 Environment: ${NODE_ENV}`);
-    logger.info(`🐳 Monitoring container: ${process.env.MINECRAFT_CONTAINER || 'minecraft-bds-1'}`);
+    logger.info(`🐳 Monitoring container: ${process.env.MINECRAFT_CONTAINER || 'bds'}`);
     
     // Start monitoring server logs
     monitoringInterval = minecraftService.startServerMonitoring();

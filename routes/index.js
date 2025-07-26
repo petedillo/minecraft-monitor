@@ -7,12 +7,18 @@ const minecraftRoutes = require('./minecraft');
 router.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the Minecraft Server Monitor API!',
-    version: '1.0.0',
+    version: '2.0.0',
     endpoints: {
       health: '/health',
       status: '/status',
       command: '/command (POST)',
-
+      players: '/players',
+      teleport: '/tp (POST)',
+      give: '/give (POST)',
+      kick: '/kick (POST)',
+      ban: '/ban (POST)',
+      gamemode: '/gamemode (POST)',
+      effect: '/effect (POST)'
     },
     timestamp: new Date().toISOString()
   });

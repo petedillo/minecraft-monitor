@@ -20,8 +20,16 @@ function errorHandler(err, req, res, next) {
   } else if (err.message.includes('Failed to execute command')) {
     statusCode = 502;
     message = 'Unable to execute command on Minecraft server';
-
   } else if (err.message.includes('Command must be a non-empty string')) {
+    statusCode = 400;
+    message = err.message;
+  } else if (err.message.includes('is not allowed')) {
+    statusCode = 400;
+    message = err.message;
+  } else if (err.message.includes('Must provide either target player or coordinates')) {
+    statusCode = 400;
+    message = err.message;
+  } else if (err.message.includes('Invalid gamemode')) {
     statusCode = 400;
     message = err.message;
   }
