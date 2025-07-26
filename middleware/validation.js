@@ -222,6 +222,37 @@ function requestLogger(req, res, next) {
   next();
 }
 
+/**
+ * Validate say message for POST /say endpoint
+ */
+function validateSay(req, res, next) {
+  const { message } = req.body;
+
+  if (!message) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Message is required',
+      timestamp: new Date().toISOString()
+    });
+  }
+  if (typeof message !== 'string') {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Message must be a string',
+      timestamp: new Date().toISOString()
+    });
+  }
+  if (message.trim().length === 0) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Message cannot be empty',
+      timestamp: new Date().toISOString()
+    });
+  }
+  logger.info(`Say validation passed: ${message}`);
+  next();
+}
+
 module.exports = {
   validateCommand,
   validateTeleport,
@@ -229,5 +260,6 @@ module.exports = {
   validatePlayerAction,
   validateGamemode,
   validateEffect,
-  requestLogger
+  requestLogger,
+  validateSay
 };

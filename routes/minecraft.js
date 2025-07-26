@@ -7,7 +7,8 @@ const {
   validateGiveItem, 
   validatePlayerAction, 
   validateGamemode, 
-  validateEffect 
+  validateEffect,
+  validateSay
 } = require('../middleware/validation');
 
 // Get server status and active players
@@ -17,6 +18,7 @@ router.get('/status', minecraftController.getStatus);
 router.post('/command', validateCommand, minecraftController.executeCommand);
 
 // High-level API endpoints
+
 // Get list of online players
 router.get('/players', minecraftController.getPlayers);
 
@@ -37,5 +39,8 @@ router.post('/gamemode', validateGamemode, minecraftController.changeGamemode);
 
 // Apply an effect to a player
 router.post('/effect', validateEffect, minecraftController.applyEffect);
+
+// Say a message to the server
+router.post('/say', validateSay, minecraftController.say);
 
 module.exports = router;

@@ -184,6 +184,26 @@ function healthCheck(req, res) {
   });
 }
 
+/**
+ * Say a message to the Minecraft server
+ */
+async function say(req, res, next) {
+  try {
+    const { message } = req.body;
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      return res.status(400).json({ status: 'error', message: 'Message must be a non-empty string.' });
+    }
+    await minecraftService.executeMinecraftCommand(`say ${message}`);
+    res.json({
+      status: 'success',
+      message: `Said: ${message}`,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getStatus,
   executeCommand,
@@ -194,5 +214,6 @@ module.exports = {
   banPlayer,
   changeGamemode,
   applyEffect,
-  healthCheck
+  healthCheck,
+  say
 };
