@@ -129,7 +129,7 @@ curl -X POST http://localhost:3000/tp \
 ```bash
 curl -X POST http://localhost:3000/give \
   -H "Content-Type: application/json" \
-  -d '{"player": "Soniadillo", "item": "minecraft:diamond_block", "amount": 10}'
+  -d '{"player": "Soniadillo", "item": "minecraft:torch", "amount": 64}'
 ```
 
 ### Change gamemode

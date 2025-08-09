@@ -1,18 +1,19 @@
-# Dockerfile for Minecraft Express API
-FROM node:22-alpine
+# Use our new custom base image from your registry
+FROM petedillo.com/node-docker:latest
 
-# Set working directory
-WORKDIR /usr/src/app
+# The base image already sets the user and working directory.
 
 # Copy package files and install dependencies
-COPY package*.json ./
+# Note: The base image switches to a non-root user, so we need to ensure
+# file permissions are correct. Using COPY --chown is good practice.
+COPY --chown=appuser:appuser package*.json ./
 RUN npm install --production
 
-# Copy rest of the source code
-COPY . .
+# Copy the rest of your application's source code
+COPY --chown=appuser:appuser . .
 
-# Expose port (default Express port)
+# Expose the port your app runs on
 EXPOSE 3000
 
-# Start the API
+# Define the command to run your app
 CMD ["node", "server.js"]

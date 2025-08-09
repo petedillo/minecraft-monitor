@@ -20,27 +20,39 @@ try {
  */
 async function getActivePlayers() {
   return new Promise((resolve, reject) => {
-    exec(`docker logs ${MINECRAFT_CONTAINER} --tail 50 | grep "Player connected"`, (error, stdout, stderr) => {
-      if (error && error.code !== 1) {
-        logger.error(`Error getting player list: ${error.message}`);
-        return reject(new Error(`Failed to get active players: ${error.message}`));
+    // 1. Fetch raw logs without relying on grep to avoid timing/buffering issues.
+    // We fetch a larger number of lines to accurately determine who is currently online.
+    exec(`docker logs ${MINECRAFT_CONTAINER} --tail 200`, (error, stdout, stderr) => {
+      if (error) {
+        logger.error(`Error getting docker logs: ${error.message}`);
+        return reject(new Error(`Failed to get docker logs: ${error.message}`));
       }
-      
-      if (stdout) {
-        const playerMatches = stdout.matchAll(/Player connected:\s+([^,]+)/g);
-        const players = [];
-        for (const match of playerMatches) {
-          if (match[1]) {
-            players.push(match[1].trim());
-          }
+
+      // 2. Process the logs in JavaScript to determine the current player list.
+      const playerState = {}; // Use an object to track the latest status of each player.
+
+      const lines = stdout.split('\n');
+      for (const line of lines) {
+        const connectedMatch = line.match(/Player connected: ([^,]+),/);
+        if (connectedMatch && connectedMatch[1]) {
+          const player = connectedMatch[1].trim();
+          playerState[player] = 'connected'; // Mark player as connected.
         }
-        
-        const uniquePlayers = [...new Set(players)];
-        logger.info(`Found ${uniquePlayers.length} active players`);
-        resolve(uniquePlayers);
-      } else {
-        resolve([]);
+
+        const disconnectedMatch = line.match(/Player disconnected: ([^,]+),/);
+        if (disconnectedMatch && disconnectedMatch[1]) {
+          const player = disconnectedMatch[1].trim();
+          playerState[player] = 'disconnected'; // Mark player as disconnected.
+        }
       }
+
+      // 3. Filter down to only the players who are currently connected.
+      const activePlayers = Object.keys(playerState).filter(
+        (player) => playerState[player] === 'connected'
+      );
+
+      logger.info(`Found ${activePlayers.length} active players: ${activePlayers.join(', ')}`);
+      resolve(activePlayers);
     });
   });
 }
