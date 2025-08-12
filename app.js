@@ -1,7 +1,10 @@
+const path = require('path');
 const express = require('express');
 const routes = require('./routes');
 const { requestLogger } = require('./middleware/validation');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+const fs = require('fs');
+const cors = require('cors');
 const logger = require('./utils/logger');
 
 /**
@@ -21,23 +24,13 @@ function createApp() {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
   
-  // CORS headers for development mode
-  if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV !== 'production') {
-    app.use((req, res, next) => {
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-      res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
-      
-      // Handle preflight requests
-      if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-      }
-      
-      next();
-    });
-    logger.info('🌐 CORS enabled for development mode');
-  }
+  // CORS configuration
+  const corsOptions = {
+    origin: 'https://diochat.petedillo.com',
+    optionsSuccessStatus: 200 // For legacy browser support
+  };
+  app.use(cors(corsOptions));
+  logger.info(`🌐 CORS enabled for origin: ${corsOptions.origin}`);
   
   // Security headers
   app.use((req, res, next) => {
@@ -47,8 +40,22 @@ function createApp() {
     next();
   });
   
-  // Mount routes
-  app.use('/', routes);
+  // Serve openapi.json for tool discovery
+  app.get('/openapi.json', (req, res, next) => {
+    const filePath = path.join(__dirname, 'openapi.json');
+    logger.info(`Attempting to serve openapi.json from: ${filePath}`);
+
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        logger.error(`File not found at ${filePath}`);
+        return next(); // Pass to 404 handler
+      }
+      res.sendFile(filePath);
+    });
+  });
+
+  // Mount all API routes under /v2
+  app.use('/v2', routes);
   
   // 404 handler for unknown routes
   app.use(notFoundHandler);

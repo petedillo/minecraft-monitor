@@ -1,0 +1,316 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Minecraft Server Monitor API",
+    "version": "2.0.0",
+    "description": "OpenAPI specification for the Minecraft Server Monitor API used by Open WebUI Tool Server."
+  },
+  "servers": [
+    { "url": "https://gameserver.petedillo.com", "description": "Production" }
+  ],
+  "tags": [
+    { "name": "system", "description": "API health and info" },
+    { "name": "players", "description": "Players and status" },
+    { "name": "admin", "description": "Administrative actions" }
+  ],
+  "paths": {
+    "/v2/": {
+      "get": {
+        "tags": ["system"],
+        "operationId": "getApiInfo",
+        "summary": "API welcome and endpoints",
+        "responses": {
+          "200": {
+            "description": "API info",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiInfo" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/health": {
+      "get": {
+        "tags": ["system"],
+        "operationId": "getHealth",
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "API healthy",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Health" } } }
+          }
+        }
+      }
+    },
+    "/v2/api/status": {
+      "get": {
+        "tags": ["players"],
+        "operationId": "getStatus",
+        "summary": "Server status",
+        "responses": {
+          "200": {
+            "description": "Status info",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Status" } } }
+          }
+        }
+      }
+    },
+    "/v2/api/players": {
+      "get": {
+        "tags": ["players"],
+        "operationId": "getPlayers",
+        "summary": "List online players",
+        "responses": {
+          "200": {
+            "description": "Players list",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Players" } } }
+          }
+        }
+      }
+    },
+    "/v2/api/tp": {
+      "post": {
+        "tags": ["admin"],
+        "operationId": "teleport",
+        "summary": "Teleport player to coords or another player",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TeleportRequest" },
+              "examples": {
+                "toPlayer": {
+                  "summary": "Teleport Steve to Alex",
+                  "value": { "from": "Steve", "to": "Alex" }
+                },
+                "toCoords": {
+                  "summary": "Teleport Steve to coordinates",
+                  "value": { "from": "Steve", "coords": { "x": 100, "y": 70, "z": 200 } }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OkResponse" } } } } }
+      }
+    },
+    "/v2/api/give": {
+      "post": {
+        "tags": ["admin"],
+        "operationId": "giveItems",
+        "summary": "Give items to a player",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GiveRequest" },
+              "examples": {
+                "example": { "value": { "player": "Steve", "item": "minecraft:torch", "amount": 32 } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OkResponse" } } } } }
+      }
+    },
+    "/v2/api/kick": {
+      "post": {
+        "tags": ["admin"],
+        "operationId": "kickPlayer",
+        "summary": "Kick a player",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/KickRequest" } } }
+        },
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OkResponse" } } } } }
+      }
+    },
+    "/v2/api/ban": {
+      "post": {
+        "tags": ["admin"],
+        "operationId": "banPlayer",
+        "summary": "Ban a player",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BanRequest" } } }
+        },
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OkResponse" } } } } }
+      }
+    },
+    "/v2/api/gamemode": {
+      "post": {
+        "tags": ["admin"],
+        "operationId": "changeGamemode",
+        "summary": "Change player gamemode",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GamemodeRequest" } } }
+        },
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OkResponse" } } } } }
+      }
+    },
+    "/v2/api/effect": {
+      "post": {
+        "tags": ["admin"],
+        "operationId": "applyEffect",
+        "summary": "Apply or clear status effects",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EffectRequest" } } }
+        },
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OkResponse" } } } } }
+      }
+    },
+    "/v2/api/command": {
+      "post": {
+        "tags": ["admin"],
+        "operationId": "executeCommand",
+        "summary": "Execute raw server command",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommandRequest" } } }
+        },
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OkResponse" } } } } }
+      }
+    },
+    "/v2/api/say": {
+      "post": {
+        "tags": ["admin"],
+        "operationId": "say",
+        "summary": "Say a message to the Minecraft server",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SayRequest" } } }
+        },
+        "responses": { "200": { "description": "OK", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OkResponse" } } } } }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiInfo": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" },
+          "version": { "type": "string" },
+          "endpoints": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        }
+      },
+      "Health": {
+        "type": "object",
+        "properties": { "status": { "type": "string", "example": "ok" } }
+      },
+      "Status": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "running" },
+          "playerCount": { "type": "integer" },
+          "players": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "Players": {
+        "type": "object",
+        "properties": {
+          "players": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "TeleportRequest": {
+        "type": "object",
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "coords": {
+            "type": "object",
+            "properties": {
+              "x": { "type": "integer" },
+              "y": { "type": "integer" },
+              "z": { "type": "integer" }
+            },
+            "required": ["x", "y", "z"]
+          }
+        },
+        "required": ["from"],
+        "oneOf": [
+          { "required": ["to"] },
+          { "required": ["coords"] }
+        ]
+      },
+      "GiveRequest": {
+        "type": "object",
+        "properties": {
+          "player": { "type": "string" },
+          "item": { 
+            "type": "string",
+            "description": "The namespaced Minecraft item ID (e.g., 'minecraft:torch', 'minecraft:diamond_sword')."
+           },
+          "amount": { "type": "integer", "default": 64 }
+        },
+        "required": ["player", "item"]
+      },
+      "KickRequest": {
+        "type": "object",
+        "properties": {
+          "player": { "type": "string" },
+          "reason": { "type": "string", "default": "No reason provided" }
+        },
+        "required": ["player"]
+      },
+      "BanRequest": {
+        "type": "object",
+        "properties": {
+          "player": { "type": "string" },
+          "reason": { "type": "string", "default": "No reason provided" }
+        },
+        "required": ["player"]
+      },
+      "GamemodeRequest": {
+        "type": "object",
+        "properties": {
+          "player": { "type": "string" },
+          "mode": { "type": "string", "enum": ["survival", "creative", "adventure", "spectator"] }
+        },
+        "required": ["player", "mode"]
+      },
+      "EffectRequest": {
+        "type": "object",
+        "properties": {
+          "player": { "type": "string" },
+          "effect": { "type": "string" },
+          "seconds": { "type": "integer", "default": 60 },
+          "amplifier": { "type": "integer", "default": 0 },
+          "clear": { "type": "boolean", "default": false }
+        },
+        "required": ["player"],
+        "anyOf": [
+          { "required": ["effect"] },
+          { "required": ["clear"] }
+        ]
+      },
+      "CommandRequest": {
+        "type": "object",
+        "properties": {
+          "command": { "type": "string", "description": "Raw command without leading slash" }
+        },
+        "required": ["command"]
+      },
+      "OkResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" }
+        }
+      },
+      "SayRequest": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "description": "Message to broadcast to the server" }
+        },
+        "required": ["message"]
+      }
+    }
+  }
+}

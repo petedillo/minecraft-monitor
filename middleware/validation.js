@@ -83,8 +83,9 @@ function validateTeleport(req, res, next) {
  * Validate give item request
  */
 function validateGiveItem(req, res, next) {
-  const { player, item, amount } = req.body;
-  
+  const { player, item } = req.body;
+  let { amount } = req.body;
+
   if (!player || typeof player !== 'string') {
     return res.status(400).json({
       status: 'error',
@@ -92,7 +93,7 @@ function validateGiveItem(req, res, next) {
       timestamp: new Date().toISOString()
     });
   }
-  
+
   if (!item || typeof item !== 'string') {
     return res.status(400).json({
       status: 'error',
@@ -100,15 +101,30 @@ function validateGiveItem(req, res, next) {
       timestamp: new Date().toISOString()
     });
   }
-  
-  if (amount !== undefined && (!Number.isInteger(amount) || amount < 1 || amount > 64)) {
-    return res.status(400).json({
-      status: 'error',
-      message: 'Amount must be an integer between 1 and 64',
-      timestamp: new Date().toISOString()
-    });
+
+  if (amount !== undefined) {
+    if (typeof amount === 'string') {
+      const parsedAmount = parseInt(amount, 10);
+      if (isNaN(parsedAmount)) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Amount must be a valid number',
+          timestamp: new Date().toISOString()
+        });
+      }
+      amount = parsedAmount;
+      req.body.amount = amount; // Update the request body for downstream handlers
+    }
+
+    if (!Number.isInteger(amount) || amount < 1 || amount > 64) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Amount must be an integer between 1 and 64',
+        timestamp: new Date().toISOString()
+      });
+    }
   }
-  
+
   next();
 }
 

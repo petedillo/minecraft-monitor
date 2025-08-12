@@ -9,16 +9,17 @@ router.get('/', (req, res) => {
     message: 'Welcome to the Minecraft Server Monitor API!',
     version: '2.0.0',
     endpoints: {
-      health: '/health',
-      status: '/status',
-      command: '/command (POST)',
-      players: '/players',
-      teleport: '/tp (POST)',
-      give: '/give (POST)',
-      kick: '/kick (POST)',
-      ban: '/ban (POST)',
-      gamemode: '/gamemode (POST)',
-      effect: '/effect (POST)'
+      health: '/v2/health',
+      status: '/v2/api/status',
+      command: '/v2/api/command (POST)',
+      players: '/v2/api/players',
+      teleport: '/v2/api/tp (POST)',
+      give: '/v2/api/give (POST)',
+      kick: '/v2/api/kick (POST)',
+      ban: '/v2/api/ban (POST)',
+      gamemode: '/v2/api/gamemode (POST)',
+      effect: '/v2/api/effect (POST)',
+      say: '/v2/api/say (POST)'
     },
     timestamp: new Date().toISOString()
   });
@@ -28,6 +29,6 @@ router.get('/', (req, res) => {
 router.get('/health', minecraftController.healthCheck);
 
 // Mount minecraft routes
-router.use('/', minecraftRoutes);
+router.use('/api', minecraftRoutes);
 
 module.exports = router;
